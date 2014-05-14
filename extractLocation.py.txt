@@ -1,0 +1,112 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#task:
+#	translate every position in inputfile into its latitude and longitude
+# using baidu's api.
+#   input format : url name
+# 	output format: json
+#		{
+#			{
+#				"url":"http://www.baidu.com",
+#				"name":"Beijing",
+#				"location":{
+#								"lng":116.3161,
+#								"lat":39.99776
+#							}
+#
+#			}
+#			{
+#				"url":"http://www.baidu.com",
+#				"name":"Beijing",
+#				"location":{
+#								"lng":116.3161,
+#								"lat":39.99776
+#							}
+#			}
+#			...
+#
+#		}
+import urllib2
+import json
+import re
+class Parser:
+	def __init__(self, inputFile, key, city):
+		self.fdread = open(inputFile, 'r')
+		self.fdwrite = open(inputFile+".result.json",'w')
+		self.key = key
+		self.city = city
+		self.linePattern = re.compile('^(http\S*)\s*(\S*)\s*业主论坛\s*$')
+
+	def lookup(self,name):
+		url = "http://api.map.baidu.com/geocoder?address=\""+name+"\"&output=json&key="+self.key+"&city="+self.city
+		try:
+			response = urllib2.urlopen(url,None,timeout=3)
+			data = response.read()
+			result = json.loads(data)
+		except:
+			print("baidu map api invoke failed: [timeout]No Result Returned for Address :"+name)
+			return None
+		
+		#print ("type of lookup result:"+str(type(result)))
+		#print result
+		if result['status'] != "OK":
+			print("baidu map api invoke failed: No Result Returned for Address :"+name)
+			return None 
+		else:
+			if result['result'] == []:
+				print("baidu map api invoke failed: No Result Returned for Address :"+name)
+				return None
+			return result['result']['location']
+
+	def mainloop(self):
+		resultList = []
+		line = self.fdread.readline()
+		testCount = 1
+		while line!="" or testCount == 100:
+			res = self.handleLine(line)
+			line = self.fdread.readline()
+			if res:
+				testCount += 1
+				resultList.append(res)
+			else:
+				continue
+		self.fdwrite.write(json.dumps(resultList))
+		self.flushFd()
+
+	def flushFd(self):
+		self.fdread.close()
+		self.fdwrite.close()
+
+	def handleLine(self, line):
+		res = {}
+		res['url'] = ""
+		res['location']=""
+		res['name'] = ""
+		match = self.linePattern.search(line)
+		if match:
+			url = match.group(1)
+			name = match.group(2)
+		else:
+			print "unmatch line : "+line
+			return None
+		#print ("[in handleLine] line:"+line)
+		res['url'] = url
+		res['name'] = name
+		location = self.lookup(name)
+		if location :
+			res['location'] = location
+		else:
+			res['location'] = "No Location Returned!"
+		return res
+
+import sys
+if __name__ == "__main__":
+	key = "I3PeCzN9abAO4td4z75D03Gp"
+	city = "北京"
+	if len(sys.argv) == 1: # use default filaname
+		inputFile = "1.txt"
+	else: # use inputFile from args
+		inputFile = sys.argv[1]
+
+	parser = Parser(inputFile, key, city)
+	parser.mainloop()
