@@ -1,0 +1,36 @@
+hadoop fs -ls /group01/output
+git   zxx   353002832@qq.com   
+github   morningchristina 353002832@qq.com
+git      支持分支；分布式版本管理系统；支持离线提交；快速部署
+origin  
+upstream
+GitHub上的代码库本身：尤其是：Explore、热门关注信息库两个栏目
+GitHub官方推荐：GitHub自身的官方博客与GitHub员工们的个人博客推荐的项目与开发
+各类社交媒体上提到的的GitHub库：尤其是Hacker News上提到的GitHub库。
+gitstats
+#复制GitStats项目到本地
+cd ~/dev
+git clone git://github.com/trybeee/GitStats.git
+python ~/dev/gitstats/git-stats /youproject public 
+创建新的文件夹
+git init
+以创建新的 git 仓库.
+git clone xxxxx
+git add xxx
+git commit -m “xxxxxx”
+git push origin zhangxiangxia
+git remote add origin http://xxxx.git
+git pull origin zhangxiangxia
+git fetch xxxxx
+git pull  xxxxx    更新本地仓库至最新改动
+git fetch xxxx
+git push origin master
+git merge xxx/master      合并分支到当前分支
+git branch xxxxx
+git checkout xxxxx      合并：git checkout -b xxxxx
+git branch -d xxxxx
+git push origin xxxx
+
+
+
+chmod +x xxxx
